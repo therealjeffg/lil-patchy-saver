@@ -28,12 +28,20 @@ webnative.initialize(fissionInit).then(async state => {
       scenarioSpan.textContent = 'Signed in.';
       dom.show('app');
 
+      window.postMessage({ type: "FROM_PAGE", text: "User is authenticated." });
+
       const fs = state.fs;
       const savedPagesPath = webnative.path.directory('public', 'saved-pages')
       let latestCapture = {};
 
       window.addEventListener('message', event => {
+        // Ignore messages from page script
+        if (event.data.type && (event.data.type === "FROM_PAGE")) {
+          return;
+        }
+
         console.log(event)
+
         dom.displayCapturedPage(event.data.detail);
 
         latestCapture = event.data.detail;
