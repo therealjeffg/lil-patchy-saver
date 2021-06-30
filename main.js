@@ -10,7 +10,7 @@ const screenshotImg = document.getElementById('screenshot')
 const fissionInit = {
   permissions: {
     app: {
-      name: 'pachy',
+      name: 'lil-patchy-viewer',
       creator: 'bgins'
     },
     fs: {
