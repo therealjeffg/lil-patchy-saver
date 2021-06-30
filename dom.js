@@ -1,4 +1,3 @@
-const messageP = document.getElementById('message')
 const urlA = document.getElementById('url')
 const timestampSpan = document.getElementById('timestamp')
 const screenshotImg = document.getElementById('screenshot')
@@ -18,10 +17,11 @@ const show = (...ids) => {
 
 const displayCapturedPage = (data) => {
   screenshotImg.src = data.imageUri;
-  messageP.textContent = ''
   urlA.href = data.url;
   urlA.textContent = data.url;
   timestampSpan.textContent = formatDate(data.timestamp);
+  hide('message')
+  show('latest-capture')
 }
 
 function formatDate(timestamp) {

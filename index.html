@@ -7,6 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="favicon.png">
   <script src="https://unpkg.com/webnative@0.26.0/dist/index.min.js"></script>
+  <script src="https://unpkg.com/uuid@8.3.2/dist/umd/uuid.min.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/mvp.css">
   <title>Lil Patchy Viewer</title>
   <script defer type="module" src="main.js"></script>
@@ -30,13 +31,15 @@
     <div id="app" style="display: none">
       <article>
         <h1>Latest Capture</h1>
-        <form>
+        <p id="message">Waiting for Lil Patchy to capture a page 🐘</p>
+
+        <form id="latest-capture" style="display: none">
           <article>
             <img style="width: 75%" id="screenshot"></img>
           </article>
 
           <article>
-            <p><span id="message">Awaiting page capture</span><a id="url"></a></p>
+            <p><a id="url"></a></p>
             <p><span id="timestamp"></span></p>
           </article>
 
@@ -47,11 +50,13 @@
           <textarea id="notes" rows="4" cols="33"></textarea>
 
           <button id="save">Save</button>
+          <p id="saving-message" style="display: none">Saving captured page 🐘🐘💾</p>
         </form>
       </article>
 
       <article>
         <h1>Saved Pages</h1>
+        <p>Coming soon</p>
       </article>
     </div>
   </main>
