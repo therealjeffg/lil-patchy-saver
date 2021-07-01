@@ -30,10 +30,10 @@
 
     <div id="app" style="display: none">
       <article>
-        <h1>Latest Capture</h1>
-        <p id="message">Waiting for Lil Patchy to capture a page 🐘</p>
+        <h1>Captured Pages <span id="captured-pages-counter" style="display: none"></span></h1>
+        <p id="captured-pages-message">Waiting for Lil Patchy to capture a page 🐘</p>
 
-        <form id="latest-capture" style="display: none">
+        <form id="captured-pages" style="display: none">
           <article>
             <img style="width: 75%" id="screenshot"></img>
           </article>
@@ -49,8 +49,11 @@
           <label for="notes">Notes</label>
           <textarea id="notes" rows="4" cols="33"></textarea>
 
+          <!-- [1] Save a captured page -->
           <button id="save">Save</button>
-          <p id="saving-message" style="display: none">Saving captured page 🐘🐘💾</p>
+
+          <!-- [2] Show a message while publishing -->
+          <p id="saving" style="display: none">Saving captured page 🐘🐘💾</p>
         </form>
       </article>
 

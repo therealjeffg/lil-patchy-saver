@@ -3,9 +3,11 @@ import * as dom from './dom.js';
 const scenarioSpan = document.getElementById('scenario');
 const signInButton = document.getElementById('sign-in');
 
-const saveButton = document.getElementById('save');
+const capturedPagesMessage = document.getElementById('captured-pages-message');
+
 const labelInput = document.getElementById('label');
 const notesInput = document.getElementById('notes');
+const saveButton = document.getElementById('save');
 
 webnative.setup.debug({ enabled: true });
 
@@ -32,26 +34,37 @@ webnative.initialize(fissionInit).then(async state => {
 
       const fs = state.fs;
       const savedPagesPath = webnative.path.directory('public', 'saved-pages')
-      let latestCapture = {};
+      let capturedPages;
+      let capturedPagesCount;
+      let updatePageCount;
+      let currentCapturedPage;
 
       window.addEventListener('message', event => {
+
         // Ignore messages from page script
         if (event.data.type && (event.data.type === "FROM_PAGE")) {
           return;
         }
 
-        console.log(event)
+        const detail = event.data.detail;
 
-        dom.displayCapturedPage(event.data.detail);
+        capturedPages = Array.isArray(detail) ? detail : [detail];
+        capturedPagesCount = capturedPages.length;
 
-        latestCapture = event.data.detail;
+        currentCapturedPage = capturedPages.shift();
+        dom.displayCapturedPage(currentCapturedPage);
+
+        updatePageCount = dom.setPageCount(1, capturedPagesCount)
+        dom.hide('captured-pages-message');
+        dom.clearInputs('label', 'notes')
+        dom.show('captured-pages', 'captured-pages-counter', 'save');
       });
 
       saveButton.addEventListener('click', async event => {
         event.preventDefault();
 
-        latestCapture = {
-          ...latestCapture,
+        currentCapturedPage = {
+          ...currentCapturedPage,
           uuid: uuid.v4(),
           label: labelInput.value,
           notes: notesInput.value
@@ -59,14 +72,29 @@ webnative.initialize(fissionInit).then(async state => {
 
         const path = webnative.path.combine(
           savedPagesPath,
-          webnative.path.file(`${latestCapture.uuid}.json`)
+          webnative.path.file(`${currentCapturedPage.uuid}.json`)
         )
 
         dom.hide('save')
-        dom.show('saving-message')
-        await fs.write(path, latestCapture);
+        dom.show('saving')
+
+        await fs.write(path, currentCapturedPage);
         await fs.publish();
-        dom.hide('saving-message')
+
+        dom.hide('saving')
+        dom.clearInputs('label', 'notes');
+
+        if (capturedPages.length > 0) {
+          let currentCapturedPage = capturedPages.shift();
+          dom.displayCapturedPage(currentCapturedPage);
+
+          updatePageCount(capturedPagesCount - capturedPages.length)
+          dom.show('save')
+        } else {
+          dom.hide('captured-pages', 'captured-pages-counter')
+          capturedPagesMessage.textContent = 'All pages saved!'
+          dom.show('captured-pages-message');
+        }
       })
 
       break;

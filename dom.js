@@ -1,6 +1,7 @@
 const urlA = document.getElementById('url')
 const timestampSpan = document.getElementById('timestamp')
 const screenshotImg = document.getElementById('screenshot')
+const capturedPagesCounter = document.getElementById('captured-pages-counter');
 
 const hide = (...ids) => {
   ids.forEach(id => {
@@ -11,17 +12,35 @@ const hide = (...ids) => {
 const show = (...ids) => {
   ids.forEach(id => {
     const el = document.getElementById(id);
-    el.style.display = 'block';
+    if (el.tagName === 'SPAN') {
+      el.style.display = 'inline';
+    } else {
+      el.style.display = 'block';
+    }
   });
 };
+
+const clearInputs = (...ids) => {
+  ids.forEach(id =>  {
+    const el = document.getElementById(id);
+    el.value = '';
+  })
+}
+
+const setPageCount = (initialPage, totalPages) => {
+  const total = totalPages;
+  capturedPagesCounter.textContent = `(${initialPage}/${total})`
+
+  return count => {
+    capturedPagesCounter.textContent = `(${count}/${total})`
+  }
+}
 
 const displayCapturedPage = (data) => {
   screenshotImg.src = data.imageUri;
   urlA.href = data.url;
   urlA.textContent = data.url;
   timestampSpan.textContent = formatDate(data.timestamp);
-  hide('message')
-  show('latest-capture')
 }
 
 function formatDate(timestamp) {
@@ -40,4 +59,4 @@ function formatDate(timestamp) {
   return formattedDate;
 }
 
-export { displayCapturedPage, hide, show };
+export { clearInputs, displayCapturedPage, hide, setPageCount, show };
