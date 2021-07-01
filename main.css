@@ -1,0 +1,12 @@
+img {
+  width: 75%
+}
+
+#saved-page-label {
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+
+#saved-page-url, #saved-page-timestamp {
+  font-size: 1.2rem;
+}

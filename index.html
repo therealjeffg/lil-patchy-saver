@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+  <title>Lil Patchy Viewer</title>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +10,7 @@
   <script src="https://unpkg.com/webnative@0.26.0/dist/index.min.js"></script>
   <script src="https://unpkg.com/uuid@8.3.2/dist/umd/uuid.min.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/mvp.css">
-  <title>Lil Patchy Viewer</title>
+  <link rel="stylesheet" href="main.css">
   <script defer type="module" src="main.js"></script>
 </head>
 
@@ -30,12 +31,12 @@
 
     <div id="app" style="display: none">
       <article>
-        <h1>Captured Pages <span id="captured-pages-counter" style="display: none"></span></h1>
+        <h1>Captured Pages <span id="captured-pages-counter"></span></h1>
         <p id="captured-pages-message">Waiting for Lil Patchy to capture a page 🐘</p>
 
         <form id="captured-pages" style="display: none">
           <article>
-            <img style="width: 75%" id="screenshot"></img>
+            <img id="screenshot"></img>
           </article>
 
           <article>
@@ -57,9 +58,23 @@
         </form>
       </article>
 
-      <article>
+      <article id="saved-pages" style="display: none">
         <h1>Saved Pages</h1>
-        <p>Coming soon</p>
+        <section>
+          <article id="saved-page" style="display: none">
+            <p>
+              <span id="saved-page-label"></span>
+              <span> • </span>
+              <a id="saved-page-url"></a>
+              <span> • </span>
+              <span id="saved-page-timestamp"></span>
+            </p>
+            <img id="saved-page-screenshot"/>
+            <p id="saved-page-notes"></p>
+          </article>
+        </section>
+        <section id="saved-page-options">
+        </section>
       </article>
     </div>
   </main>

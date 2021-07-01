@@ -4,10 +4,11 @@ const scenarioSpan = document.getElementById('scenario');
 const signInButton = document.getElementById('sign-in');
 
 const capturedPagesMessage = document.getElementById('captured-pages-message');
-
 const labelInput = document.getElementById('label');
 const notesInput = document.getElementById('notes');
 const saveButton = document.getElementById('save');
+
+const savedPagesOptions = document.getElementById('saved-page-options');
 
 webnative.setup.debug({ enabled: true });
 
@@ -30,14 +31,48 @@ webnative.initialize(fissionInit).then(async state => {
       scenarioSpan.textContent = 'Signed in.';
       dom.show('app');
 
+      // Send a message to inform the extension that the user is authed
       window.postMessage({ type: "FROM_PAGE", text: "User is authenticated." });
 
       const fs = state.fs;
-      const savedPagesPath = webnative.path.directory('public', 'saved-pages')
-      let capturedPages;
-      let capturedPagesCount;
+
+      let capturedPages, capturedPagesCount, currentCapturedPage;
       let updatePageCount;
-      let currentCapturedPage;
+
+      /** Load saved pages from WNFS
+       * The pages are stored JSON files in 'public/saved-pages'.
+       */
+
+      const savedPagesPath = webnative.path.directory('public', 'saved-pages')
+      const utf8decoder = new TextDecoder();
+
+      let savedPagesIndex = await fs.ls(savedPagesPath)
+      let savedPages = await Promise.all(Object.keys(savedPagesIndex).map(async filename => {
+        const path = webnative.path.combine(
+          savedPagesPath,
+          webnative.path.file(filename)
+        )
+
+        const file = await fs.read(path);
+        const decodedFile = utf8decoder.decode(file);
+
+        return JSON.parse(decodedFile);
+      }))
+
+
+      /** Show cards for each saved page if any */
+
+      if (savedPages.length > 0) {
+        dom.show('saved-pages')
+
+        savedPages.forEach(page => {
+          let option = dom.savedPageOption(page);
+          savedPagesOptions.appendChild(option)
+        })
+      }
+
+
+      /** Listen for pages to save from the extension */
 
       window.addEventListener('message', event => {
 
@@ -60,6 +95,9 @@ webnative.initialize(fissionInit).then(async state => {
         dom.show('captured-pages', 'captured-pages-counter', 'save');
       });
 
+
+      /** Save pages to WNFS one at a time until done */
+
       saveButton.addEventListener('click', async event => {
         event.preventDefault();
 
@@ -78,8 +116,13 @@ webnative.initialize(fissionInit).then(async state => {
         dom.hide('save')
         dom.show('saving')
 
-        await fs.write(path, currentCapturedPage);
+        // Write the captured page to WNFS
+        await fs.write(path, JSON.stringify(currentCapturedPage));
         await fs.publish();
+
+        // Add a card to saved pages section
+        let option = dom.savedPageOption(currentCapturedPage);
+        savedPagesOptions.appendChild(option);
 
         dom.hide('saving')
         dom.clearInputs('label', 'notes');
@@ -105,6 +148,9 @@ webnative.initialize(fissionInit).then(async state => {
       dom.show('sign-in');
       break;
   }
+
+
+  /** Sign the user in through the Fission auth lobby */
 
   signInButton.addEventListener('click', () => {
     console.log('signing in');

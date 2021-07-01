@@ -3,6 +3,13 @@ const timestampSpan = document.getElementById('timestamp')
 const screenshotImg = document.getElementById('screenshot')
 const capturedPagesCounter = document.getElementById('captured-pages-counter');
 
+const savedPage = document.getElementById('saved-page');
+const savedPageLabel = document.getElementById('saved-page-label');
+const savedPageUrl = document.getElementById('saved-page-url');
+const savedPageTimestamp = document.getElementById('saved-page-timestamp');
+const savedPageScreenshot = document.getElementById('saved-page-screenshot');
+const savedPageNotes = document.getElementById('saved-page-notes');
+
 const hide = (...ids) => {
   ids.forEach(id => {
     document.getElementById(id).style.display = 'none';
@@ -27,6 +34,8 @@ const clearInputs = (...ids) => {
   })
 }
 
+// CAPTURED PAGES
+
 const setPageCount = (initialPage, totalPages) => {
   const total = totalPages;
   capturedPagesCounter.textContent = `(${initialPage}/${total})`
@@ -42,6 +51,43 @@ const displayCapturedPage = (data) => {
   urlA.textContent = data.url;
   timestampSpan.textContent = formatDate(data.timestamp);
 }
+
+
+// SAVED PAGES
+
+const savedPageOption = page => {
+  console.log(page)
+    const option = document.createElement('aside');
+
+    const labelP = document.createElement('p');
+    labelP.textContent = page.label;
+    labelP.style.fontWeight = 'bold';
+
+    const timestampP = document.createElement('p');
+    timestampP.textContent = formatDate(page.timestamp);
+
+    option.appendChild(labelP)
+    option.appendChild(timestampP)
+
+    option.addEventListener('click', () => showPage(page));
+    return option;
+}
+
+const showPage = page => {
+  savedPage.style.display = 'none';
+
+  savedPageScreenshot.src = page.imageUri;
+  savedPageLabel.textContent = page.label;
+  savedPageUrl.textContent = page.url;
+  savedPageUrl.href = page.url;
+  savedPageTimestamp.textContent = formatDate(page.timestamp);
+  savedPageNotes.textContent = page.notes;
+
+  savedPage.style.display = 'block';
+}
+
+
+// Localization
 
 function formatDate(timestamp) {
   const date = new Date(timestamp);
@@ -59,4 +105,4 @@ function formatDate(timestamp) {
   return formattedDate;
 }
 
-export { clearInputs, displayCapturedPage, hide, setPageCount, show };
+export { clearInputs, displayCapturedPage, hide, savedPageOption, setPageCount, show };
