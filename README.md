@@ -1,4 +1,4 @@
-# Lil Patchy Viewer
+# Lil Patchy Saver
 
 This web app displays and stores web pages captured by the [Lil Patchy web extension](https://github.com/therealjeffg/lil-patchy).
 
@@ -9,4 +9,4 @@ The extension captures the following information when `saving` a page:
 * the time of the capture
 * [ eventually ] the full article text and additional text content from the page.
 
-Lil Patchy Viewer listens for pages captured by the extension and displays them. Eventually, it will store the pages to IPFS and WNFS.
+Lil Patchy Saver listens for pages captured by the extension and stores them to WNFS.

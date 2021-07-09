@@ -15,7 +15,7 @@ webnative.setup.debug({ enabled: true });
 const fissionInit = {
   permissions: {
     app: {
-      name: 'lil-patchy-viewer',
+      name: 'lil-patchy-saver',
       creator: 'bgins'
     },
     fs: {
@@ -128,6 +128,8 @@ webnative.initialize(fissionInit).then(async state => {
         dom.clearInputs('label', 'notes');
 
         if (capturedPages.length > 0) {
+
+          // Slice off the next page to display
           let currentCapturedPage = capturedPages.shift();
           dom.displayCapturedPage(currentCapturedPage);
 
