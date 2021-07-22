@@ -76,25 +76,28 @@ webnative.initialize(fissionInit).then(async state => {
 
       window.addEventListener('message', event => {
 
-        // Ignore messages from page script
-        if (event.data.type && (event.data.type === "FROM_PAGE")) {
+        console.log('event', event, window.patchy);
+
+        if (!event.data && !event.data.id) {
+          // reject message payload shapes we don't support
           return;
+        } else {
+          const detail = event.data.data;
+
+          console.log('got here', detail);
+
+          capturedPages = Array.isArray(detail) ? detail : [detail];
+          capturedPagesCount = capturedPages.length;
+  
+          currentCapturedPage = capturedPages.shift();
+          dom.displayCapturedPage(currentCapturedPage);
+  
+          updatePageCount = dom.setPageCount(1, capturedPagesCount)
+          dom.hide('captured-pages-message');
+          dom.clearInputs('label', 'notes')
+          dom.show('captured-pages', 'captured-pages-counter', 'save');
         }
-
-        const detail = event.data.detail;
-
-        capturedPages = Array.isArray(detail) ? detail : [detail];
-        capturedPagesCount = capturedPages.length;
-
-        currentCapturedPage = capturedPages.shift();
-        dom.displayCapturedPage(currentCapturedPage);
-
-        updatePageCount = dom.setPageCount(1, capturedPagesCount)
-        dom.hide('captured-pages-message');
-        dom.clearInputs('label', 'notes')
-        dom.show('captured-pages', 'captured-pages-counter', 'save');
       });
-
 
       /** Save pages to WNFS one at a time until done */
 
