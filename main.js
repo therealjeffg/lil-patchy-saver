@@ -10,6 +10,10 @@ const saveButton = document.getElementById('save');
 
 const savedPagesOptions = document.getElementById('saved-page-options');
 
+window.FISSION_LOGGED_IN = false;
+
+/** Listen for pages to save from the extension */
+
 webnative.setup.debug({ enabled: true });
 
 const fissionInit = {
@@ -31,12 +35,41 @@ webnative.initialize(fissionInit).then(async state => {
       scenarioSpan.textContent = 'Signed in.';
       dom.show('app');
 
+      let capturedPages, capturedPagesCount, currentCapturedPage;
+
+      window.addEventListener('message', event => {
+        console.log('event', event, window.patchy);
+
+        if (event.data.type === 'FROM_PAGE') {
+          return;
+        }
+      
+        if (!event.data && !event.data.id) {
+          // reject message payload shapes we don't support
+          return;
+        } else {
+          const detail = event.data.data;
+      
+          console.log('got here', detail);
+      
+          capturedPages = Array.isArray(detail) ? detail : [detail];
+          capturedPagesCount = capturedPages.length;
+      
+          currentCapturedPage = capturedPages.shift();
+          dom.displayCapturedPage(currentCapturedPage);
+      
+          updatePageCount = dom.setPageCount(1, capturedPagesCount)
+          dom.hide('captured-pages-message');
+          dom.clearInputs('label', 'notes')
+          dom.show('captured-pages', 'captured-pages-counter', 'save');
+        }
+      });
+
       // Send a message to inform the extension that the user is authed
       window.postMessage({ type: "FROM_PAGE", text: "User is authenticated." });
 
       const fs = state.fs;
 
-      let capturedPages, capturedPagesCount, currentCapturedPage;
       let updatePageCount;
 
       /** Load saved pages from WNFS
@@ -70,34 +103,6 @@ webnative.initialize(fissionInit).then(async state => {
           savedPagesOptions.appendChild(option)
         })
       }
-
-
-      /** Listen for pages to save from the extension */
-
-      window.addEventListener('message', event => {
-
-        console.log('event', event, window.patchy);
-
-        if (!event.data && !event.data.id) {
-          // reject message payload shapes we don't support
-          return;
-        } else {
-          const detail = event.data.data;
-
-          console.log('got here', detail);
-
-          capturedPages = Array.isArray(detail) ? detail : [detail];
-          capturedPagesCount = capturedPages.length;
-  
-          currentCapturedPage = capturedPages.shift();
-          dom.displayCapturedPage(currentCapturedPage);
-  
-          updatePageCount = dom.setPageCount(1, capturedPagesCount)
-          dom.hide('captured-pages-message');
-          dom.clearInputs('label', 'notes')
-          dom.show('captured-pages', 'captured-pages-counter', 'save');
-        }
-      });
 
       /** Save pages to WNFS one at a time until done */
 

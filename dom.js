@@ -56,7 +56,7 @@ const displayCapturedPage = (data) => {
 // SAVED PAGES
 
 const savedPageOption = page => {
-  console.log(page)
+  // console.log(page)
     const option = document.createElement('aside');
 
     const labelP = document.createElement('p');
